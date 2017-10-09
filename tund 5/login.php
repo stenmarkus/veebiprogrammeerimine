@@ -1,7 +1,13 @@
 <?php
-	require("../../../config.php");
+	//require("../../../config.php");
 	require("functions.php");
 	//echo $serverHost;
+	
+	//kui on juba sisseloginud
+	if(isset($_SESSION["userId"])){
+		header("Location: main.php");
+		exit();
+	}
 	$signupFirstName = "";
 	$signupFamilyName = "";
 	$gender = "";
@@ -12,6 +18,7 @@
 	$signupBirthDate = "";
 	
 	$loginEmail = "";
+	$notice="!";
 	$signupFirstNameError = "";
 	$signupFamilyNameError = "";
 	$signupBirthDayError = "";
@@ -21,14 +28,26 @@
 	
 	$loginEmailError ="";
 	
-	//kas on kasutajanimi sisestatud
-	if (isset ($_POST["loginEmail"])){
-		if (empty ($_POST["loginEmail"])){
-			$loginEmailError ="NB! Sisselogimiseks on vajalik kasutajatunnus (e-posti aadress)!";
-		} else {
-			$loginEmail = $_POST["loginEmail"];
+	$lastIdea="";
+	
+	if(isset($_POST["loginButton"])){
+		//kas on kasutajanimi sisestatud
+		if (isset ($_POST["loginEmail"])){
+			if (empty ($_POST["loginEmail"])){
+				$loginEmailError ="NB! Sisselogimiseks on 	vajalik kasutajatunnus (e-posti aadress)!";
+			} else {
+				$loginEmail = $_POST["loginEmail"];
+			}
 		}
-	}
+		
+		if(!empty($loginEmail) and !empty($_POST["loginPassword"])){
+			//echo "Alustan sisselogimist!";
+			//$hash = hash("sha512", $_POST["loginEmail"]);
+			$notice = signIn($loginEmail, $_POST["loginPassword"]);
+			//$notice = signIn($loginEmail, $hash);
+		}
+		
+	}//if loginButton
 	
 	//kas klikiti kasutaja loomise nupul
 	if(isset($_POST["signupButton"])){
@@ -167,6 +186,7 @@
 		
 	}
 	$signupYearSelectHTML.= "</select> \n";
+	$lastIdea = readLastIdea();
 	
 ?>
 <!DOCTYPE html>
@@ -176,19 +196,21 @@
 	<title>Sisselogimine või uue kasutaja loomine</title>
 </head>
 <body>
-	<h1>Logi sisse!</h1>
+	<h1>Heade mõtete veeb</h1>
+	<p> Värskeim hea mõte on: <span><?php echo $lastIdea; ?>
+	<h2>Logi sisse!</h2>
 	<p>Siin harjutame sisselogimise funktsionaalsust.</p>
 	
 	<form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
 		<label>Kasutajanimi (E-post): </label>
-		<input name="loginEmail" type="email" value="<?php echo $loginEmail; ?>"><span><?php echo $loginEmailError; ?></span>
+		<input name="loginEmail" type="email" value="<?php echo $loginEmail; ?>">
 		<br><br>
 		<input name="loginPassword" placeholder="Salasõna" type="password"><span></span>
 		<br><br>
-		<input type="submit" value="Logi sisse">
+		<input name="loginButton" type="submit" value="Logi sisse"><span><?php echo $notice; ?></span>
 	</form>
 	
-	<h1>Loo kasutaja</h1>
+	<h2>Loo kasutaja</h2>
 	<p>Kui pole veel kasutajat....</p>
 	
 	<form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
