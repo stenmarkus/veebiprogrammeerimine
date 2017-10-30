@@ -1,6 +1,6 @@
 <?php
-	require("../../../vpconfig.php");
-	$database = "if17_rinde";
+	require("../../../config.php");
+	$database = "if17_lahtsten";
 	
 	//alustamse sessiooni
 	session_start();
@@ -78,6 +78,37 @@
 		$stmt->close();
 		$mysqli->close();
 		return $notice;
+	}
+	
+	function readAllIdeas(){
+		$ideas = "";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		//$stmt = $mysqli->prepare("SELECT idea, ideacolor FROM vp2userideas");//absoluutselt kõigi mõtted
+		//$stmt = $mysqli->prepare("SELECT idea, ideacolor FROM vp2userideas WHERE userid = ?");
+		$stmt = $mysqli->prepare("SELECT idea, ideacolor FROM vp2userideas WHERE userid = ? ORDER BY id DESC");
+		$stmt->bind_param("i", $_SESSION["userId"]);
+		
+		$stmt->bind_result($idea, $color);
+		$stmt->execute();
+		while ($stmt->fetch()){
+			$ideas .= '<p style="background-color: ' .$color .'">' .$idea ."</p> \n";
+		}
+		
+		$stmt->close();
+		$mysqli->close();
+		return $ideas;
+	}
+	
+	
+	function readLastIdea(){
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		$stmt = $mysqli->prepare("SELECT idea FROM vp2userideas WHERE id = (SELECT MAX(id) FROM vp2userideas)");
+		$stmt->bind_result($idea);
+		$stmt->execute();
+		$stmt->fetch();
+		$stmt->close();
+		$mysqli->close();
+		return $idea;
 	}
 	
 	//sisestuse kontrollimise funktsioon

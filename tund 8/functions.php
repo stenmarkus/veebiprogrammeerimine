@@ -80,7 +80,38 @@
 		return $notice;
 	}
 	
+	function readAllIdeas(){
+		$ideas = "";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		//$stmt = $mysqli->prepare("SELECT idea, ideacolor FROM vp2userideas");//absoluutselt kõigi mõtted
+		//$stmt = $mysqli->prepare("SELECT idea, ideacolor FROM vp2userideas WHERE userid = ?");
+		$stmt = $mysqli->prepare("SELECT idea, ideacolor FROM vp2userideas WHERE userid = ? ORDER BY id DESC");
+		$stmt->bind_param("i", $_SESSION["userId"]);
+		
+		$stmt->bind_result($idea, $color);
+		$stmt->execute();
+		while ($stmt->fetch()){
+			$ideas .= '<p style="background-color: ' .$color .'">' .$idea .'| <a href=edituseridea.php?id=?' $id .'">Toimeta</a>"'"</p> \n";
+		//lisame lingi: <a href="edituseridea.php?id=6>Toimeta</a>
+		}
+		
+		
+		$stmt->close();
+		$mysqli->close();
+		return $ideas;
+	}
 	
+	
+	function readLastIdea(){
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		$stmt = $mysqli->prepare("SELECT idea FROM vp2userideas WHERE id = (SELECT MAX(id) FROM vp2userideas)");
+		$stmt->bind_result($idea);
+		$stmt->execute();
+		$stmt->fetch();
+		$stmt->close();
+		$mysqli->close();
+		return $idea;
+	}
 	
 	//sisestuse kontrollimise funktsioon
 	function test_input($data){

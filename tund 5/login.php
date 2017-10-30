@@ -186,7 +186,7 @@
 		
 	}
 	$signupYearSelectHTML.= "</select> \n";
-	$lastIdea = readLastIdea();
+	
 	
 ?>
 <!DOCTYPE html>
