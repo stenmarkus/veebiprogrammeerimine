@@ -1,36 +1,47 @@
 <?php
 	require("../../../config.php");
 	$database = "if17_lahtsten";
-
-	//loeme toimetamiseks mõtte
 	
-	function getSingleIdea($editId)
-	
-	$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
-	$stmt= $mysqli->prepare("SELECT idea, ideacolor FROM users WHERE id=?");
-	$stmt->bind_param("i"), $editId;
-	$stmt->bind_result($idea, $color);
-	$stmt->execute();
-	$ideaObject = new $tdclass();
-	if($stmt->fetch()){
-		$ideaobject->text=$idea;
-		$ideaobject->color= $color
+	//loeme toimetamiseks mõyye
+	function getSingleIdea($editId){
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		$stmt = $mysqli->prepare("SELECT idea, ideacolor FROM vpusers WHERE id=?");
+		$stmt->bind_param("i", $editId);
+		$stmt->bind_result($idea, $color);
+		$stmt->execute();
+		$ideaObject = new Stdclass();
+		if($stmt->fetch()){
+			$ideaObject->text = $idea;
+			$ideaObject->color = $color;
+		}
+		
+		$stmt->close();
+		$mysqli->close();
+		return $ideaObject;
 		
 	}
 	
+	function updateIdea($id, $idea, $ideacolor){
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		$stmt = $mysqli->prepare("UPDATE vpusers SET idea=?, ideacolor=? WHERE id=?");
+		$stmt->bind_param("ssi", $idea, $ideacolor, $id);
+		if($stmt->execute()){
+			echo "Õnnestus";
+		} else {
+			echo "Tekkis viga: " .$stmt->error;
+		}
+		$stmt->close();
+		$mysqli->close();
+	}
 	
-	$stmt->close();
-	$mysqli->close();
-	return ; 
-
-function updateIdea($id, $idea, $ideacolor){
-	$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
-	
-	$stmt = mysqli->prepare("UPDATE users SET idea=?, ideacolor=?, WHERE id=?");
-	$stmt->bind_param("ssi",$idea, $ideacolor, $id);
-	if(stmt->execute()){
-		echo "Õnnestus";
-	  else (
-		echo"Tekkis viga" .$stmt->error;
+	function deleteIdea($id){
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		$stmt = $mysqli->prepare("UPDATE vp2users SET deleted=NOW() WHERE id=?");
+		$stmt->bind_param("i", $id);
+		$stmt->execute();
+		
+		$stmt->close();
+		$mysqli->close();
+	}
 	
 ?>

@@ -1,9 +1,9 @@
 <?php
 
-$txt= "Hello world"
-$number =10;
+$txt= "Hello world";
+$number= 10;
 
-echo $txt
-echo $number
+echo $txt;
+echo $number;
 
 ?>

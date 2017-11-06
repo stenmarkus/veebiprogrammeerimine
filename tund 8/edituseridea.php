@@ -1,10 +1,7 @@
 <?php
 	require("functions.php");
-	require("editideafunctions")
-	
+	require("editideafunctions.php");
 	$notice = "";
-	$ideas = "";
-	
 	//kui pole sisse logitud, liigume login lehele
 	if(!isset($_SESSION["userId"])){
 		header("Location: login.php");
@@ -17,24 +14,22 @@
 		header("Location: login.php");
 	}
 	
-	//kui klõpsati uuendamise nupule
+	//kui klõpsati uuendamise nuppu
 	if(isset($_POST["ideaBtn"])){
 		updateIdea($_POST["id"], test_input($_POST["userIdea"]), $_POST["ideaColor"]);
-		header("location:userideas.php");
+		header("Location: ?id=" .$_POST["id"]);
+		//header("Location: userideas.php");
+		//exit();
+	}
+	
+	//kas kustutatakse
+	if(isset($_GET["delete"])){
+		deleteIdea($_GET["id"]);
+		header("Location: userideas.php");
 		exit();
-		
-		
-	function deletreIdea($id){
-		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
-		$stmt= $mysqli->prepare("UPDATE users SET deleted=NOW() WHERE id=? AND deleted IS NULL ORDER BY id DESC");
+	}
 	
-	
-	
-	$idea= getSingleIdea($_GET["id"]);
-	
-	
-	
-	
+	$idea = getSingleIdea($_GET["id"]);
 	
 ?>
 
@@ -50,20 +45,19 @@
 	
 	<p>See veebileht on loodud õppetöö raames ning ei sisalda tõsiseltvõetavat sisu.</p>
 	<p><a href="?logout=1">Logi välja</a></p>
-	<p><a href="userIdeas.php">Tagasi mõtete lehele</a></p>
-	<h2>Head mõtted</h2>
+	<p><a href="userideas.php">Tagasi mõtete lehele</a></p>
+	<h2>Hea mõtte toimetamine</h2>
 	<form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-		<input name="id" type="hidden" value="><?php echo $_GET("id")?>">
+		<input name="id" type="hidden" value="<?php echo $_GET["id"]; ?>">
 		<label>Hea mõte: </label>
-		<textarea name="userIdea"><?php echo $idea?>
-		<input name="userIdea" type="text">
+		<textarea name="userIdea"><?php echo $idea->text; ?></textarea>
 		<br>
 		<label>Mõttega seostuv värv: </label>
-		<input name="ideaColor" type="color">
+		<input name="ideaColor" type="color" value="<?php echo $idea->color; ?>">
 		<br>
 		<input name="ideaBtn" type="submit" value="Salvesta mõte!"><span><?php echo $notice; ?></span>
 	</form>
-	<p><a href="?id=<?=$_GET["id"];?>$delete=true"
+	<p><a href="?id=<?=$_GET["id"];?>&delete=true">Kustuta</a> see mõte!</p>
 	<hr>
 
 	
