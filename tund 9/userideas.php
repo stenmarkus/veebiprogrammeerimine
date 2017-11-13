@@ -25,7 +25,7 @@
 		}
 	}
 	
-	
+	$ideas = readAllIdeas();
 	
 ?>
 
@@ -34,7 +34,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>
-		Andrus Rinde veebiprogemise asjad
+		steni veebiproge
 	</title>
 </head>
 <body>

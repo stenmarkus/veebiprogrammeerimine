@@ -10,19 +10,21 @@
 		
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
 		
-		$stmt = $mysqli->prepare("SELECT id, email, password FROM vp2users WHERE email = ?");
+		$stmt = $mysqli->prepare("SELECT id, firstname, lastname, email, password FROM vp2users WHERE email = ?");
 		$stmt->bind_param("s", $email);
-		$stmt->bind_result($id, $emailFromDb, $passwordFromDb);
+		$stmt->bind_result($id, $firstnameFromDb, $lastnameFromDb, $emailFromDb, $passwordFromDb);
 		$stmt->execute();
 		
-		//kui vähemalt üks tulemus
+		//kontrollime vastavust
 		if ($stmt->fetch()){
 			$hash = hash("sha512", $password);
-			if($hash == $passwordFromDb){
-				$notice = "Sisselogitud!";
+			if ($hash == $passwordFromDb){
+				$notice = "Logisite sisse!";
 				
-				//määran sessioonimuutujaid
+				//Määran sessiooni muutujad
 				$_SESSION["userId"] = $id;
+				$_SESSION["firstname"] = $firstnameFromDb;
+				$_SESSION["lastname"] = $lastnameFromDb;
 				$_SESSION["userEmail"] = $emailFromDb;
 				
 				//lähen pealehele
@@ -66,7 +68,7 @@
 	function saveIdea($idea, $color){
 		$notice = "";
 		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
-		$stmt = $mysqli->prepare("INSERT INTO vpusers (userid, idea, ideacolor) VALUES(?, ?, ?)");
+		$stmt = $mysqli->prepare("INSERT INTO vp2userideas (userid, idea, ideacolor) VALUES(?, ?, ?)");
 		echo $mysqli->error;
 		$stmt->bind_param("iss", $_SESSION["userId"], $idea, $color);
 		if($stmt->execute()){
@@ -80,7 +82,31 @@
 		return $notice;
 	}
 	
+	function readAllIdeas(){
+		$ideas = "";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		//$stmt = $mysqli->prepare("SELECT idea, ideacolor FROM vp2userideas");//absoluutselt kõigi mõtted
+		//$stmt = $mysqli->prepare("SELECT idea, ideacolor FROM vp2userideas WHERE userid = ?");
+		$stmt = $mysqli->prepare("SELECT id, idea, ideacolor FROM vpusers WHERE userid = ? AND deleted IS NULL ORDER BY id DESC");
+		$stmt->bind_param("i", $_SESSION["userId"]);
+		
+		$stmt->bind_result($id, $idea, $color);
+		$stmt->execute();
+		while ($stmt->fetch()){
+			$ideas .= '<p style="background-color: ' .$color .'">' .$idea .' | <a href="edituseridea.php?id=' .$id .'">Toimeta</a>' ."</p> \n";
+			//lisame lingi:  | <a href="edituseridea.php?id=6">Toimeta</a>
+		}
+		
+		$stmt->close();
+		$mysqli->close();
+		return $ideas;
+	}
 	
+	
+	function readLastIdea(){
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
+		$stmt = $mysqli->prepare("SELECT idea FROM vpusers WHERE id = (SELECT MAX(id) FROM vpusers WHERE deleted IS NULL)");
+	}
 	
 	//sisestuse kontrollimise funktsioon
 	function test_input($data){

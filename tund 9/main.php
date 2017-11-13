@@ -28,19 +28,14 @@
 	$fileCount = count($picFiles);
 	$picNumber = mt_rand(0, ($fileCount - 1));
 	$picFile = $picFiles[$picNumber];
+	require("header.php");
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<title>
-		steni veebiproge
-	</title>
+
 </head>
 <body>
 	
-	<p>See veebileht on loodud õppetöö raames ning ei sisalda tõsiseltvõetavat sisu.</p>
+	
 	<p><a href="?logout=1">Logi välja</a></p>
 	<p><a href="usersInfo.php">Info kasutajate kohta</a></p>
 	<p><a href="userideas.php">Head mõtted</a></p>
@@ -49,3 +44,9 @@
 	
 </body>
 </html>
+
+<?php
+	require("footer.php");
+
+
+?>
