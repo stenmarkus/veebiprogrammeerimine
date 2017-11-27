@@ -136,3 +136,4 @@
 
 <?php
 require("footer.php");
+?>
