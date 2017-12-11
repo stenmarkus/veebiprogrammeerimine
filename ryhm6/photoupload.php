@@ -3,17 +3,6 @@
 	require("../../../config.php");
 	$database = "if17_ryhm6";
 	$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $GLOBALS["database"]);
-	$Name = $_POST['pealkiri'];
-	$sql = "INSERT INTO pildid(nimi) VALUES('$Name')";
-	if(!mysqli_query($mysqli, $sql))
-	{
-		echo "Pole sisetatud";
-	}
-	else
-	{
-		echo "Sisestatud";
-	}
-		
  	
 	//Algab foto laadimise osa
 	$target_dir = "../pildid/";
@@ -76,9 +65,6 @@
 	<form action="photoupload.php" method="post" enctype="multipart/form-data">
 		<label>Valige pildifail:</label>
 		<input type="file" name="fileToUpload" id="fileToUpload">
-		<label>Pane pildile nimi:</label>
-		<input type="text" name="pealkiri">
-		<input type="submit" value="Sisesta">
 		<input type="submit" value="Lae üles" name="submit">
 	</form>
 	

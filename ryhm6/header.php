@@ -29,7 +29,7 @@ body {margin:0;}
 <body>
 
 <div class="topnav">
-  <a class="active" href="photos.php">TEISTE PILDID</a>
+  <a class="active" href="photos1.php">TEISTE PILDID</a>
 
   <a href="photoupload.php">PILTIDE LAADIMINE</a>
   
